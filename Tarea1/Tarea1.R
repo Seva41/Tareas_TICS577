@@ -4,8 +4,8 @@
 #Ejercicio 1
 
 # 1)
-vector <- c(seq(1,20),seq(10,100,10),seq(31,100))
-
+vector <- matrix(c(seq(1,20),seq(10,100,10),seq(31,100)),1,100)
+vector
 # 2)
 ## 2.1)
 A <- matrix(c(2,5,-6,1),4,1)
@@ -38,3 +38,32 @@ res3 <- J %*% I
 res3
 
 # 3)
+v1 <- matrix(seq(1,50),1,50)
+v2 <- matrix(seq(1,500),1,500)
+v3 <- matrix(seq(1,1000),1,1000)
+v4 <- matrix(seq(1,15000),1,15000)
+v5 <- matrix(seq(1,200000),1,200000)
+
+norma <- function(v) {
+  suma <- 0
+  for (i in v) {
+    suma <- suma + i^2
+  }
+  n <- sqrt(suma)
+  return(n)
+}
+
+n1 <- norma(v1)
+n2 <- norma(v2)
+n3 <- norma(v3)
+n4 <- norma(v4)
+n5 <- norma(v5)
+
+n1
+n2
+n3
+n4
+n5
+
+# 4)
+
