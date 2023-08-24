@@ -1,5 +1,6 @@
 # Métodos basados en Kernels para aprendizaje automático
 # Tarea 1
+# Integrantes: Sebastián Dinator, Cristóbal Quijanes.
 
 #Ejercicio 1
 
@@ -102,7 +103,7 @@ output
 
 # 6) (sale como 5 en pdf)
 
-factorial <- function(e) {
+factor <- function(e) {
   new_e <- e
   while (e > 1) {
     new_e <- new_e * (e-1)
@@ -116,7 +117,7 @@ fact_matr <- function(m) {
   shape <- dim(m)
   
   for (i in m){
-    n_f <- factorial(i)
+    n_f <- factor(i)
     elem <- c(elem,n_f)
   }
   
@@ -130,3 +131,6 @@ res
 
 # 7) (sale como 6 en pdf)
 
+
+
+###############################################
