@@ -90,7 +90,43 @@ n5
 
 # 5)
 
-f5 <- function(v) {
-  
-  return()
+varianza <- function(v) {
+  prom <- sum(v) / length(v)
+  out <- sum((v - prom)^2) / (length(v) - 1) #Error en PDF, esta correido en codigo
+  return(out)
 }
+
+v6 <- matrix(c(3,4,3),1,3)
+output <- varianza(v6)
+output
+
+# 6) (sale como 5 en pdf)
+
+factorial <- function(e) {
+  new_e <- e
+  while (e > 1) {
+    new_e <- new_e * (e-1)
+    e <- e - 1
+  }
+  return(new_e)
+}
+
+fact_matr <- function(m) {
+  elem <- NULL
+  shape <- dim(m)
+  
+  for (i in m){
+    n_f <- factorial(i)
+    elem <- c(elem,n_f)
+  }
+  
+  matriz <- matrix(elem,shape[1],shape[2])
+  return(matriz)
+}
+
+mat_5 <- matrix(c(1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8),4,4)
+res <- fact_matr(mat_5)
+res
+
+# 7) (sale como 6 en pdf)
+
