@@ -131,6 +131,55 @@ res
 
 # 7) (sale como 6 en pdf)
 
+func7 <- function(x, y, M) {
+  n <- length(x)
+  m <- length(y)
+  
+  result <- 0
+  
+  for (l in 1:n) {
+    suma_jk <- 0
+    for (j in 1:m) {
+      suma_k <- sum(y[j] * x[l] * x * M[l, j])
+      suma_jk <- suma_jk + suma_k
+    }
+    
+    result <- result + suma_jk
+  }
+  
+  final <- (1/n) * result
+  return(final)
+}
 
+n <- 3
+m <- 4
+M <- matrix(0,n,m)
+
+for (i in 1:n) {
+  for (j in 1:m) {
+    M[i, j] <- (i + j) * (i - j)
+  }
+}
+
+x <- c(1, 2, 3)
+y <- c(0.5, 0.7, 0.9)
+
+res7 <- func7(x, y, M)
+res7
 
 ###############################################
+#Ejercicio 2
+
+# 1)
+
+kern_RQ <- function(x,y,sig,l,alpha) {
+  dist <- sqrt(sum((x - y)^2))
+  par <- (dist / (2*alpha*l)^2) + 1
+  pot <- par^-alpha
+  total <- sig^2 * pot
+  
+  return(total)
+}
+
+# 2)
+
