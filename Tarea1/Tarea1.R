@@ -183,3 +183,80 @@ kern_RQ <- function(x,y,sig,l,alpha) {
 
 # 2)
 
+
+# 3)
+
+
+###############################################
+#Ejercicio 3
+
+# 1)
+
+mult_trip <- function(x,y,A) {
+  
+  f <- length(x)
+  x_t <- matrix(0.0, 1, f)
+  
+  for (i in 1:f) {
+      x_t[1, i] <- x[i]
+  }
+  
+  x_t_A <- matrix(0.0,1,f)
+  index <- 1
+  for (k in 1:f) {
+    for (j in x_t) {
+      sum_x <- 0
+      sum_x <- sum_x + (x_t[1,j]*A[j,k])
+    }
+    x_t_A[1,k] <- sum_x
+  }
+  
+  res <- 
+    
+  res <- x_t %*% A %*% y
+  return(res)
+}
+
+# 2)
+
+n <- 10000
+x <- runif(n)
+#x <- t(t(x_t1))
+y <- runif(n)
+#y <- t(t(y_t1))
+
+A <- matrix(0.0,n,n)
+for (i in 1:n) {
+  for (j in 1:n) {
+    A[i,j] <- runif(1)
+  }
+}
+
+start_time_MT <- system.time({mult_trip(x,y,A)})
+start_time_T <- system.time({t(x) %*% A %*% y})
+
+print(paste("Tiempo de ejecucion MT:", start_time_MT[["elapsed"]], "seg"))
+print(paste("Tiempo de ejecucion T:", start_time_T[["elapsed"]], "seg"))
+dif <- start_time_MT[["elapsed"]] - start_time_T[["elapsed"]]
+format_diff <- sprintf("%.60f", dif)
+print(paste("Diferencia:", format_diff))
+# FALTA GRAFICAR!!
+
+###############################################
+#Ejercicio 4
+
+# a)
+
+
+# b)
+
+
+###############################################
+#Ejercicio 5
+
+# 1)
+
+
+# 2)
+
+
