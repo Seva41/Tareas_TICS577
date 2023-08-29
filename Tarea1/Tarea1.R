@@ -2,17 +2,17 @@
 # Tarea 1
 # Integrantes: Sebastián Dinator, Cristóbal Quijanes.
 
-#Ejercicio 1
+# Ejercicio 1
 
 # 1)
 
-vector <- matrix(c(seq(1,20),seq(10,100,10),seq(31,100)),1,100)
+vector <- matrix(c(seq(1, 20), seq(10, 100, 10), seq(31, 100)), 1, 100)
 vector
 
 # 2)
 ## 2.1)
-A <- matrix(c(2,5,-6,1),4,1)
-B <- matrix(c(1,1,1,1),4,1)
+A <- matrix(c(2, 5, -6, 1), 4, 1)
+B <- matrix(c(1, 1, 1, 1), 4, 1)
 A_t <- t(A)
 
 res <- A_t %*% B
@@ -20,9 +20,9 @@ res
 
 ## 2.2)
 
-C <- matrix(c(-1,3,-6,1),4,1)
-D <- matrix(c(1,-2,3,-4),4,1)
-E <- matrix(c(1,0,0,2),4,1)
+C <- matrix(c(-1, 3, -6, 1), 4, 1)
+D <- matrix(c(1, -2, 3, -4), 4, 1)
+E <- matrix(c(1, 0, 0, 2), 4, 1)
 
 F <- C + D
 F_t <- t(F)
@@ -32,10 +32,10 @@ res2
 
 ## 2.3)
 
-G <- matrix(c(0,-1,2,0),4,1)
+G <- matrix(c(0, -1, 2, 0), 4, 1)
 G_t <- t(G)
-H <- matrix(c(1,8,-4,1,2,7,-3,-1,3,6,-2,1,4,5,-1,-1),4,4)
-I <- matrix(c(1,0,0,2),4,1)
+H <- matrix(c(1, 8, -4, 1, 2, 7, -3, -1, 3, 6, -2, 1, 4, 5, -1, -1), 4, 4)
+I <- matrix(c(1, 0, 0, 2), 4, 1)
 
 J <- G_t %*% H
 res3 <- J %*% I
@@ -43,11 +43,11 @@ res3
 
 # 3)
 
-v1 <- matrix(seq(1,50),1,50)
-v2 <- matrix(seq(1,500),1,500)
-v3 <- matrix(seq(1,1000),1,1000)
-v4 <- matrix(seq(1,15000),1,15000)
-v5 <- matrix(seq(1,200000),1,200000)
+v1 <- matrix(seq(1, 50), 1, 50)
+v2 <- matrix(seq(1, 500), 1, 500)
+v3 <- matrix(seq(1, 1000), 1, 1000)
+v4 <- matrix(seq(1, 15000), 1, 15000)
+v5 <- matrix(seq(1, 200000), 1, 200000)
 
 norma <- function(v) {
   suma <- 0
@@ -93,11 +93,11 @@ n5
 
 varianza <- function(v) {
   prom <- sum(v) / length(v)
-  out <- sum((v - prom)^2) / (length(v) - 1) #Error en PDF, esta correido en codigo
+  out <- sum((v - prom)^2) / (length(v) - 1) # Error en PDF, esta correido en codigo
   return(out)
 }
 
-v6 <- matrix(c(3,4,3),1,3)
+v6 <- matrix(c(3, 4, 3), 1, 3)
 output <- varianza(v6)
 output
 
@@ -106,7 +106,7 @@ output
 factor <- function(e) {
   new_e <- e
   while (e > 1) {
-    new_e <- new_e * (e-1)
+    new_e <- new_e * (e - 1)
     e <- e - 1
   }
   return(new_e)
@@ -115,17 +115,17 @@ factor <- function(e) {
 fact_matr <- function(m) {
   elem <- NULL
   shape <- dim(m)
-  
-  for (i in m){
+
+  for (i in m) {
     n_f <- factor(i)
-    elem <- c(elem,n_f)
+    elem <- c(elem, n_f)
   }
-  
-  matriz <- matrix(elem,shape[1],shape[2])
+
+  matriz <- matrix(elem, shape[1], shape[2])
   return(matriz)
 }
 
-mat_5 <- matrix(c(1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8),4,4)
+mat_5 <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8), 4, 4)
 res <- fact_matr(mat_5)
 res
 
@@ -134,26 +134,26 @@ res
 func7 <- function(x, y, M) {
   n <- length(x)
   m <- length(y)
-  
+
   result <- 0
-  
+
   for (l in 1:n) {
     suma_jk <- 0
     for (j in 1:m) {
       suma_k <- sum(y[j] * x[l] * x * M[l, j])
       suma_jk <- suma_jk + suma_k
     }
-    
+
     result <- result + suma_jk
   }
-  
-  final <- (1/n) * result
+
+  final <- (1 / n) * result
   return(final)
 }
 
 n <- 3
 m <- 4
-M <- matrix(0,n,m)
+M <- matrix(0, n, m)
 
 for (i in 1:n) {
   for (j in 1:m) {
@@ -168,16 +168,16 @@ res7 <- func7(x, y, M)
 res7
 
 ###############################################
-#Ejercicio 2
+# Ejercicio 2
 
 # 1)
 
-kern_RQ <- function(x,y,sig,l,alpha) {
-  dist <- sqrt(sum((x - y)^2))
-  par <- (dist / (2*alpha*l)^2) + 1
+kern_RQ <- function(x, y, sig, l, alpha) {
+  dist <- sum((x - y)^2)
+  par <- (dist / (2 * alpha * l)^2) + 1
   pot <- par^-alpha
   total <- sig^2 * pot
-  
+
   return(total)
 }
 
@@ -188,32 +188,30 @@ kern_RQ <- function(x,y,sig,l,alpha) {
 
 
 ###############################################
-#Ejercicio 3
+# Ejercicio 3
 
 # 1)
 
-mult_trip <- function(x,y,A) {
-  
+mult_trip <- function(x, y, A) {
   f <- length(x)
   x_t <- matrix(0.0, 1, f)
-  
+
   for (i in 1:f) {
-      x_t[1, i] <- x[i]
+    x_t[1, i] <- x[i]
   }
-  
-  x_t_A <- matrix(0.0,1,f)
+
+  x_t_A <- matrix(0.0, 1, f)
   index <- 1
   for (k in 1:f) {
     for (j in x_t) {
       sum_x <- 0
-      sum_x <- sum_x + (x_t[1,j]*A[j,k])
+      sum_x <- sum_x + (x_t[1, j] * A[j, k])
     }
-    x_t_A[1,k] <- sum_x
+    x_t_A[1, k] <- sum_x
   }
-  
-  res <- 
-    
-  res <- x_t %*% A %*% y
+
+  res <-
+    res <- x_t %*% A %*% y
   return(res)
 }
 
@@ -221,19 +219,23 @@ mult_trip <- function(x,y,A) {
 
 n <- 10000
 x <- runif(n)
-#x <- t(t(x_t1))
+# x <- t(t(x_t1))
 y <- runif(n)
-#y <- t(t(y_t1))
+# y <- t(t(y_t1))
 
-A <- matrix(0.0,n,n)
+A <- matrix(0.0, n, n)
 for (i in 1:n) {
   for (j in 1:n) {
-    A[i,j] <- runif(1)
+    A[i, j] <- runif(1)
   }
 }
 
-start_time_MT <- system.time({mult_trip(x,y,A)})
-start_time_T <- system.time({t(x) %*% A %*% y})
+start_time_MT <- system.time({
+  mult_trip(x, y, A)
+})
+start_time_T <- system.time({
+  t(x) %*% A %*% y
+})
 
 print(paste("Tiempo de ejecucion MT:", start_time_MT[["elapsed"]], "seg"))
 print(paste("Tiempo de ejecucion T:", start_time_T[["elapsed"]], "seg"))
@@ -243,7 +245,7 @@ print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
 
 ###############################################
-#Ejercicio 4
+# Ejercicio 4
 
 # a)
 
@@ -252,11 +254,9 @@ print(paste("Diferencia:", format_diff))
 
 
 ###############################################
-#Ejercicio 5
+# Ejercicio 5
 
 # 1)
 
 
 # 2)
-
-
