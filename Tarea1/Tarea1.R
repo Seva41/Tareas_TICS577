@@ -179,11 +179,19 @@ kern_RQ <- function(x, y, sig, l, alpha) {
   total <- sig^2 * pot
 
   return(total)
+  return(dist)
 }
 
 # 2)
+alpha=0
+sig=0
+l=0
+x=runif(5)
+y=runif(5)
 
-
+library("rgl")
+kern_RQ(x,y,sig,l,alpha)
+plot(total,dist,col="red")
 # 3)
 
 
@@ -243,8 +251,7 @@ dif <- start_time_MT[["elapsed"]] - start_time_T[["elapsed"]]
 format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
-
-###############################################
+plot(n,dif,col="red")
 # Ejercicio 4
 
 # a)
@@ -260,3 +267,4 @@ print(paste("Diferencia:", format_diff))
 
 
 # 2)
+
