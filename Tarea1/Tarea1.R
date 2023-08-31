@@ -308,7 +308,7 @@ for (i in seq_along(n)) {
 }
 
 
-plot(n, start_time_MT[["elapsed"]], type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab = "Tiempo de Ejecución")
+plot(n, b, type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab = "Tiempo de Ejecución")
 # Ejercicio 4
 
 # a)
