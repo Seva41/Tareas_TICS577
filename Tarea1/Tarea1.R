@@ -268,7 +268,7 @@ dif <- start_time_MT[["elapsed"]] - start_time_T[["elapsed"]]
 format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
-plot(n, dif, type = "l", main = paste("Tiempo de Ejecución"), xlab = "n", ylab = "Tiempo de Ejecución")
+plot(n, start_time_MT[["elapsed"]], type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab = "Tiempo de Ejecución")
 # Ejercicio 4
 
 # a)
