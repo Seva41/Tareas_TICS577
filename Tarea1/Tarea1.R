@@ -312,10 +312,34 @@ plot(n, b, type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab
 # Ejercicio 4
 
 # a)
+# install.packages("openintro")
+library(openintro)
+starbucks2 <- starbucks[, c("calories", "fat", "carb", "fiber", "protein")]
+starbucks3 <- as.matrix(starbucks2)
+head(starbucks3)
 
+z <- starbucks3
+c <- 1
+G <- t(z) %*% z + c
+G
 
 # b)
 
+o <- 2
+l <- 0.5
+
+# Calcular la matriz de Gram
+n <- nrow(z) # Filas en Z
+G <- matrix(0, n, n)
+
+for (i in 1:n) {
+  for (j in 1:n) {
+    dif <- z[i, ] - z[j, ] # diferencia entre los vectores x e y
+    G[i, j] <- o^2 * exp(-1 / (l^2) * t(dif) %*% dif) # valor de K(x, y)
+  }
+}
+
+G
 
 ###############################################
 # Ejercicio 5
