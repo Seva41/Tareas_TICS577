@@ -269,12 +269,12 @@ format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
 
-a <- seq(100, 5000, by = 1)
-b <- numeric(length(a))
-c <- numeric(length(a))
+n <- seq(100, 5000, by = 1)
+b <- numeric(length(n))
+c <- numeric(length(n))
 
 # Generación de datos para graficar mult_trip
-for (i in seq_along(a)) {
+for (i in seq_along(n)) {
   x <- runif(n)
   y <- runif(n)
 
@@ -291,7 +291,7 @@ for (i in seq_along(a)) {
 }
 
 # Generación de datos para graficar %*%
-for (i in seq_along(a)) {
+for (i in seq_along(n)) {
   x <- runif(n)
   y <- runif(n)
 
