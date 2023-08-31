@@ -182,17 +182,26 @@ kern_RQ <- function(x, y, sig, l, alpha) {
 }
 
 # 2)
-alpha=0
-sig=0
-l=0
-x=runif(5)
-y=runif(5)
-library("rgl")
-kern_RQ(x,y,sig,l,alpha)
-plot(x,y,type = "l", main, main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
+alpha<-1
+sig<-1
+l<-1
+x<-seq(0,10,length.out=1000000)
+y<-numeric(length(x))
+for (i in seq_along(x)) {
+  y[i]<-kern_RQ(x[i],0,sig,l,alpha)
+}
+
+plot(x,y,type = "l", main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
 
 # 3)
-
+alphas<-c(5,10,50)
+for (alpha in alphas) {
+  y<-numeric(length(x))
+  for (i in seq_along(x)) {
+    y[i]<-kern_RQ(x[i],0,sig,l,alpha)  
+  }
+  plot(x,y,type = "l", main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
+}
 
 ###############################################
 # Ejercicio 3
