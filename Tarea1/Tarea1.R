@@ -182,25 +182,25 @@ kern_RQ <- function(x, y, sig, l, alpha) {
 }
 
 # 2)
-alpha<-1
-sig<-1
-l<-1
-x<-seq(0,10,length.out=1000000)
-y<-numeric(length(x))
+alpha <- 1
+sig <- 1
+l <- 1
+x <- seq(0, 10, length.out = 1000000)
+y <- numeric(length(x))
 for (i in seq_along(x)) {
-  y[i]<-kern_RQ(x[i],0,sig,l,alpha)
+  y[i] <- kern_RQ(x[i], 0, sig, l, alpha)
 }
 
-plot(x,y,type = "l", main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
+plot(x, y, type = "l", main = paste("Alpha =", alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
 
 # 3)
-alphas<-c(5,10,50)
+alphas <- c(5, 10, 50)
 for (alpha in alphas) {
-  y<-numeric(length(x))
+  y <- numeric(length(x))
   for (i in seq_along(x)) {
-    y[i]<-kern_RQ(x[i],0,sig,l,alpha)  
+    y[i] <- kern_RQ(x[i], 0, sig, l, alpha)
   }
-  plot(x,y,type = "l", main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
+  plot(x, y, type = "l", main = paste("Alpha =", alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
 }
 
 ###############################################
@@ -216,28 +216,29 @@ mult_trip <- function(x, y, A) {
     x_t[1, i] <- x[i]
   }
 
+  # Calcular x_t %*% A
   x_t_A <- matrix(0.0, 1, f)
-  index <- 1
   for (k in 1:f) {
-    for (j in x_t) {
-      sum_x <- 0
+    sum_x <- 0
+    for (j in 1:f) {
       sum_x <- sum_x + (x_t[1, j] * A[j, k])
     }
     x_t_A[1, k] <- sum_x
   }
 
-  res <-
-    res <- x_t %*% A %*% y
+  # Calcular resultado
+  res <- 0
+  for (i in 1:f) {
+    res <- res + x_t_A[1, i] * y[i]
+  }
+
   return(res)
 }
 
-# 2)
-
+# Datos de ejemplo
 n <- 10000
 x <- runif(n)
-# x <- t(t(x_t1))
 y <- runif(n)
-# y <- t(t(y_t1))
 
 A <- matrix(0.0, n, n)
 for (i in 1:n) {
@@ -246,12 +247,20 @@ for (i in 1:n) {
   }
 }
 
+# Calculo con funcion mult_trip
 start_time_MT <- system.time({
   mult_trip(x, y, A)
 })
+
+# Calculo con funcion %*%
 start_time_T <- system.time({
   t(x) %*% A %*% y
 })
+
+# Resultados
+print(paste("Tiempo de ejecucion MT:", start_time_MT[["elapsed"]], "seg"))
+print(paste("Tiempo de ejecucion T:", start_time_T[["elapsed"]], "seg"))
+
 
 print(paste("Tiempo de ejecucion MT:", start_time_MT[["elapsed"]], "seg"))
 print(paste("Tiempo de ejecucion T:", start_time_T[["elapsed"]], "seg"))
@@ -259,7 +268,7 @@ dif <- start_time_MT[["elapsed"]] - start_time_T[["elapsed"]]
 format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
-plot(n,dif,col="red")
+plot(n, dif, col = "red")
 # Ejercicio 4
 
 # a)
@@ -275,6 +284,3 @@ plot(n,dif,col="red")
 
 
 # 2)
-
-
-
