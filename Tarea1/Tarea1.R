@@ -188,10 +188,10 @@ sig=0
 l=0
 x=runif(5)
 y=runif(5)
-
 library("rgl")
 kern_RQ(x,y,sig,l,alpha)
 plot(total,dist,col="red")
+
 # 3)
 
 
