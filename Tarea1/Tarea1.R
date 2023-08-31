@@ -179,7 +179,6 @@ kern_RQ <- function(x, y, sig, l, alpha) {
   total <- sig^2 * pot
 
   return(total)
-  return(dist)
 }
 
 # 2)
@@ -190,7 +189,7 @@ x=runif(5)
 y=runif(5)
 library("rgl")
 kern_RQ(x,y,sig,l,alpha)
-plot(total,dist,col="red")
+plot(x,y,type = "l", main, main = paste("Alpha =",alpha), xlab = "||x-y||^2", ylab = "kern_RQ(x,y)")
 
 # 3)
 
