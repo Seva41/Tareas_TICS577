@@ -268,6 +268,46 @@ dif <- start_time_MT[["elapsed"]] - start_time_T[["elapsed"]]
 format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
+
+a <- seq(100, 5000, by = 1)
+b <- numeric(length(a))
+c <- numeric(length(a))
+
+# Generación de datos para graficar mult_trip
+for (i in seq_along(a)) {
+  x <- runif(n)
+  y <- runif(n)
+
+  A <- matrix(0.0, n, n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      A[i, j] <- runif(1)
+    }
+  }
+  start_time_MT <- system.time({
+    mult_trip(x, y, A)
+  })
+  b[i] <- start_time_MT[["elapsed"]]
+}
+
+# Generación de datos para graficar %*%
+for (i in seq_along(a)) {
+  x <- runif(n)
+  y <- runif(n)
+
+  A <- matrix(0.0, n, n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      A[i, j] <- runif(1)
+    }
+  }
+  start_time_T <- system.time({
+    t(x) %*% A %*% y
+  })
+  c[i] <- start_time_T[["elapsed"]]
+}
+
+
 plot(n, start_time_MT[["elapsed"]], type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab = "Tiempo de Ejecución")
 # Ejercicio 4
 
@@ -284,4 +324,3 @@ plot(n, start_time_MT[["elapsed"]], type = "l", main = paste("Tiempo de Ejecuci�
 
 
 # 2)
-
