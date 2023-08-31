@@ -211,27 +211,25 @@ for (alpha in alphas) {
 mult_trip <- function(x, y, A) {
   f <- length(x)
   x_t <- matrix(0.0, 1, f)
-
-  for (i in 1:f) {
+  
+  for (i in seq_along(x)) {
     x_t[1, i] <- x[i]
   }
-
-  # Calcular x_t %*% A
+  
   x_t_A <- matrix(0.0, 1, f)
-  for (k in 1:f) {
+  for (k in seq_along(f)) {
     sum_x <- 0
-    for (j in 1:f) {
+    for (j in seq_along(f)) {
       sum_x <- sum_x + (x_t[1, j] * A[j, k])
     }
     x_t_A[1, k] <- sum_x
   }
-
-  # Calcular resultado
+  
   res <- 0
-  for (i in 1:f) {
+  for (i in seq_along(f)) {
     res <- res + x_t_A[1, i] * y[i]
   }
-
+  
   return(res)
 }
 
@@ -269,46 +267,34 @@ format_diff <- sprintf("%.60f", dif)
 print(paste("Diferencia:", format_diff))
 # FALTA GRAFICAR!!
 
+
 n <- seq(100, 5000, by = 1)
 b <- numeric(length(n))
 c <- numeric(length(n))
 
-# Generación de datos para graficar mult_trip
 for (i in seq_along(n)) {
-  x <- runif(n)
-  y <- runif(n)
-
-  A <- matrix(0.0, n, n)
-  for (i in 1:n) {
-    for (j in 1:n) {
-      A[i, j] <- runif(1)
-    }
-  }
+  x <- runif(n[i])
+  y <- runif(n[i])
+  
+  A <- matrix(runif(n[i] * n[i]), n[i], n[i])
+  
   start_time_MT <- system.time({
     mult_trip(x, y, A)
   })
   b[i] <- start_time_MT[["elapsed"]]
-}
-
-# Generación de datos para graficar %*%
-for (i in seq_along(n)) {
-  x <- runif(n)
-  y <- runif(n)
-
-  A <- matrix(0.0, n, n)
-  for (i in 1:n) {
-    for (j in 1:n) {
-      A[i, j] <- runif(1)
-    }
-  }
+  
   start_time_T <- system.time({
     t(x) %*% A %*% y
   })
   c[i] <- start_time_T[["elapsed"]]
 }
 
+par(mfrow = c(1, 2))  # Dividir la ventana gráfica en 1x2
 
-plot(n, b, type = "l", main = paste("Tiempo de Ejecución MT"), xlab = "n", ylab = "Tiempo de Ejecución")
+plot(n, b, type = "l", main = "Tiempo de Ejecución MT", xlab = "n", ylab = "Tiempo de Ejecución")
+plot(n, c, type = "l", main = "Tiempo de Ejecución T", xlab = "n", ylab = "Tiempo de Ejecución")
+
+
 # Ejercicio 4
 
 # a)
