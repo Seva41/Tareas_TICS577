@@ -7,7 +7,7 @@ library(ggplot2)
 ## 1A)
 
 # Se cargan los datos desde el archivo datos.txt
-datos <- read.table("/Users/seva/Library/CloudStorage/OneDrive-UniversidadAdolfoIbanez/Code/Métodos basados en Kernel/Tareas/Tarea2/datos.txt", header = TRUE) # Cambiar la ruta según corresponda
+datos <- read.table("C:/Users/sebad/OneDrive - Universidad Adolfo Ibanez/Code/Métodos basados en Kernel/Tareas/Tarea2/datos.txt", header = TRUE) # Cambiar la ruta según corresponda
 
 datos_s <- datos[, c("pointX", "pointZ", "pointY")] # Se seleccionan las columnas de interés
 
@@ -197,43 +197,53 @@ boxplot(ridge_resultado$R2, main = "Distribución de R-squared en Cross-Validati
 boxplot(ridge_resultado$RMSE, main = "Distribución de RMSE en Cross-Validation (Ridge)", ylab = "RMSE")
 
 ## 2D)
-# Se escoge una iteración de cross-validation para mostrar el encogimiento de parámetros
-iter <- 1
+# Elegir una iteración de cross-validation para mostrar el encogimiento de parámetros
+iter_to_plot <- 1
 
-# Se ajusta el modelo de Ridge con el lambda óptimo de esa iteración
-lambda_optimo <- ridge_resultado$Lambda[iter]
+# Ajustar el modelo de Ridge con el lambda óptimo de esa iteración
+lambda_optimal <- ridge_results$Lambda[iter_to_plot]
 
-# Se estandarizan los predictores en el conjunto completo de datos
-datos_s$pointX <- standardize(datos_s$pointX)
-datos_s$pointZ <- standardize(datos_s$pointZ)
+# Estandarizar los predictores en el conjunto completo de datos
+datos_subset$pointX <- standardize(datos_subset$pointX)
+datos_subset$pointZ <- standardize(datos_subset$pointZ)
 
-# Se ajusta el modelo de Ridge con diferentes valores de lambda en el conjunto completo de datos
-valores_l <- seq(0.1, 3, 0.05)
-coefficients <- matrix(NA, nrow = length(valores_l), ncol = 3) # Se crea una matriz para almacenar los coeficientes
+# Dividir los datos en conjunto de entrenamiento y prueba
+train_data <- datos_subset[-folds[[iter_to_plot]], ]
+test_data <- datos_subset[folds[[iter_to_plot]], ]
 
-# Se itera sobre cada valor de lambda
-for (i in 1:length(valores_l)) {
-    lambda <- valores_l[i]
+# Estandarizar los predictores en el conjunto de prueba
+test_data$pointX <- standardize(test_data$pointX)
+test_data$pointZ <- standardize(test_data$pointZ)
 
-    # Se ajusta el modelo de Ridge con diferentes valores de lambda
-    X <- cbind(1, datos_s$pointX, datos_s$pointZ) # Agregar intercepto
-    Y <- datos_s$pointY # Variable respuesta
-    p <- ncol(X) # Número de predictores
+# Ajustar el modelo de Ridge con el lambda óptimo en el conjunto de entrenamiento
+X_train <- cbind(1, train_data$pointX, train_data$pointZ) # Agregar intercepto
+Y_train <- train_data$pointY
+p <- ncol(X_train)
 
-    # Se calculan los coeficientes Ridge manualmente
-    coef_ridge <- solve(t(X) %*% X + lambda * diag(p), t(X) %*% Y)
-    coefficients[i, ] <- coef_ridge
+# Calcular coeficientes Ridge manualmente
+ridge_coef <- solve(t(X_train) %*% X_train + lambda_optimal * diag(p), t(X_train) %*% Y_train)
+
+# Preparar un rango de valores para lambda
+lambda_values <- seq(0, 3, by = 0.1)
+
+# Inicializar matrices para almacenar los coeficientes de x y z
+coef_x <- numeric(length(lambda_values))
+coef_z <- numeric(length(lambda_values))
+
+# Calcular coeficientes Ridge para diferentes valores de lambda
+for (i in 1:length(lambda_values)) {
+  lambda <- lambda_values[i]
+  ridge_coef <- solve(t(X_train) %*% X_train + lambda * diag(p), t(X_train) %*% Y_train)
+  coef_x[i] <- ridge_coef[2] # Coeficiente para x
+  coef_z[i] <- ridge_coef[3] # Coeficiente para z
 }
 
-# Se crea un gráfico para mostrar el encogimiento de parámetros
-plot(valores_l, coefficients[, 2],
-    type = "l", xlab = "Lambda", ylab = "Coeficiente para x",
-    main = "Encogimiento de parámetros para x (Ridge)"
-)
+# Crear un gráfico para mostrar el encogimiento de los coeficientes de x y z
+plot(lambda_values, coef_x, type = "l", col = "blue", xlab = "Lambda", ylab = "Coeficiente para x", 
+     main = "Encogimiento de coeficientes para x y z (Ridge)", ylim = c(min(coef_x, coef_z), max(coef_x, coef_z)))
+lines(lambda_values, coef_z, type = "l", col = "red")
+legend("topright", legend = c("x", "z"), col = c("blue", "red"), lty = 1, title = "Variables")
 
-# Se agrega una línea vertical para el lambda óptimo
-lines(valores_l, coefficients[, 3], col = "red")
-legend("topright", legend = c("x", "z"), col = 1:2, lty = 1, title = "Variables")
 
 ### Ejericio 3
 ## 3A)
