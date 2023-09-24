@@ -77,7 +77,11 @@ ggplot(cv_results, aes(x = "", y = RMSE)) +
 ### Ejericio 2
 ## 2A)
 # Se crea un contenedor para los resultados
-ridge_resultado <- data.frame(Lambda = numeric(num_folds), R2 = numeric(num_folds), RMSE = numeric(num_folds))
+ridge_resultado <- data.frame(
+    Lambda = numeric(num_folds),
+    R2 = numeric(num_folds),
+    RMSE = numeric(num_folds)
+)
 
 # Se crea una función para estandarizar los datos
 standardize <- function(x) {
