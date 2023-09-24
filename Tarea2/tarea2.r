@@ -198,18 +198,18 @@ boxplot(ridge_resultado$RMSE, main = "Distribución de RMSE en Cross-Validation 
 
 ## 2D)
 # Elegir una iteración de cross-validation para mostrar el encogimiento de parámetros
-iter_to_plot <- 1
+iter <- 1
 
 # Ajustar el modelo de Ridge con el lambda óptimo de esa iteración
-lambda_optimal <- ridge_results$Lambda[iter_to_plot]
+lambda_optimo <- ridge_results$Lambda[iter]
 
 # Estandarizar los predictores en el conjunto completo de datos
 datos_subset$pointX <- standardize(datos_subset$pointX)
 datos_subset$pointZ <- standardize(datos_subset$pointZ)
 
 # Dividir los datos en conjunto de entrenamiento y prueba
-train_data <- datos_subset[-folds[[iter_to_plot]], ]
-test_data <- datos_subset[folds[[iter_to_plot]], ]
+train_data <- datos_subset[-folds[[iter]], ]
+test_data <- datos_subset[folds[[iter]], ]
 
 # Estandarizar los predictores en el conjunto de prueba
 test_data$pointX <- standardize(test_data$pointX)
@@ -221,27 +221,29 @@ Y_train <- train_data$pointY
 p <- ncol(X_train)
 
 # Calcular coeficientes Ridge manualmente
-ridge_coef <- solve(t(X_train) %*% X_train + lambda_optimal * diag(p), t(X_train) %*% Y_train)
+coef_ridge <- solve(t(X_train) %*% X_train + lambda_optimo * diag(p), t(X_train) %*% Y_train)
 
 # Preparar un rango de valores para lambda
-lambda_values <- seq(0, 3, by = 0.1)
+valores_lambda <- seq(0, 3, by = 0.1)
 
 # Inicializar matrices para almacenar los coeficientes de x y z
-coef_x <- numeric(length(lambda_values))
-coef_z <- numeric(length(lambda_values))
+coef_x <- numeric(length(valores_lambda))
+coef_z <- numeric(length(valores_lambda))
 
 # Calcular coeficientes Ridge para diferentes valores de lambda
-for (i in 1:length(lambda_values)) {
-  lambda <- lambda_values[i]
-  ridge_coef <- solve(t(X_train) %*% X_train + lambda * diag(p), t(X_train) %*% Y_train)
-  coef_x[i] <- ridge_coef[2] # Coeficiente para x
-  coef_z[i] <- ridge_coef[3] # Coeficiente para z
+for (i in 1:length(valores_lambda)) {
+    lambda <- valores_lambda[i]
+    coef_ridge <- solve(t(X_train) %*% X_train + lambda * diag(p), t(X_train) %*% Y_train)
+    coef_x[i] <- coef_ridge[2] # Coeficiente para x
+    coef_z[i] <- coef_ridge[3] # Coeficiente para z
 }
 
 # Crear un gráfico para mostrar el encogimiento de los coeficientes de x y z
-plot(lambda_values, coef_x, type = "l", col = "blue", xlab = "Lambda", ylab = "Coeficiente para x", 
-     main = "Encogimiento de coeficientes para x y z (Ridge)", ylim = c(min(coef_x, coef_z), max(coef_x, coef_z)))
-lines(lambda_values, coef_z, type = "l", col = "red")
+plot(valores_lambda, coef_x,
+    type = "l", col = "blue", xlab = "Lambda", ylab = "Coeficiente para x",
+    main = "Encogimiento de coeficientes para x y z (Ridge)", ylim = c(min(coef_x, coef_z), max(coef_x, coef_z))
+)
+lines(valores_lambda, coef_z, type = "l", col = "red")
 legend("topright", legend = c("x", "z"), col = c("blue", "red"), lty = 1, title = "Variables")
 
 
