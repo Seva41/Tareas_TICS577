@@ -7,7 +7,7 @@ library(ggplot2)
 ## 1A)
 
 # Se cargan los datos desde el archivo datos.txt
-datos <- read.table("C:/Users/sebad/OneDrive - Universidad Adolfo Ibanez/Code/Métodos basados en Kernel/Tareas/Tarea2/datos.txt", header = TRUE) # Cambiar la ruta según corresponda
+datos <- read.table("/Users/seva/Library/CloudStorage/OneDrive-UniversidadAdolfoIbanez/Code/Métodos basados en Kernel/Tareas/Tarea2/datos.txt", header = TRUE) # Cambiar la ruta según corresponda
 
 datos_s <- datos[, c("pointX", "pointZ", "pointY")] # Se seleccionan las columnas de interés
 
