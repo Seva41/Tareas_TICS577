@@ -1,13 +1,15 @@
 # Cargar las bibliotecas necesarias
 # install.packages("kernlab")
 library(kernlab) # Para la regresión con kernel
+library(openintro)
 
 # Se cargan los datos (reemplazar la ruta por la ruta en su computador)
-data <- read.table("C:/Users/sebad/OneDrive - Universidad Adolfo Ibanez/Code/Métodos basados en Kernel/Tareas/Tarea3/datos.txt", header = TRUE)
-
+#data <- read.table("/Users/seva/Library/CloudStorage/OneDrive-UniversidadAdolfoIbanez/Code/Métodos basados en Kernel/Tareas/Tarea3/datos.txt", header = TRUE,sep=",")
+data <- starbucks
 # EJERCICIO 1
 # Variables
-data$x <- as.numeric(data$x)
+data
+#data$x <- as.numeric(data$x)
 protein <- scale(data$protein) # Estandarizar variable independiente
 carb <- data$carb
 
