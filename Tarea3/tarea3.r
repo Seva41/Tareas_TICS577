@@ -2,7 +2,7 @@
 # install.packages("kernlab")
 library(kernlab) # Para la regresión con kernel
 
-# Cargar tus datos (reemplaza 'data' con tu propio conjunto de datos)
+# Se cargan los datos (reemplazar la ruta por la ruta en su computador)
 data <- read.table("C:/Users/sebad/OneDrive - Universidad Adolfo Ibanez/Code/Métodos basados en Kernel/Tareas/Tarea3/datos.txt", header = TRUE)
 
 # EJERCICIO 1
@@ -21,15 +21,15 @@ carb <- data$carb
 # Para cualquier conjunto de puntos {x1, x2, ..., xn}, la matriz de Gram K con K_ij = Kc(xi, xj) será una matriz de unos multiplicada por c.
 # Esta matriz es semidefinida positiva siempre que c sea mayor que o igual a cero.
 
-# Elegir un valor arbitrario de c (por ejemplo, c = 1)
+# Se elige c = 1 para el kernel constante
 c <- 1
 
-# Crear una matriz de Gram K con K_ij = Kc(xi, xj)
+# Se crea una matriz de Gram K con K_ij = Kc(xi, xj)
 n <- 10 # Número de puntos
 K <- matrix(c, n, n)
 
-# Verificar si K es semidefinida positiva
-is_positive_semidefinite <- all(eigen(K)$values >= 0)
+# Verifica si K es semidefinida positiva
+is_positive_semidefinite <- all(eigen(K)$values >= 0) # True si todos los valores propios son mayores que o iguales a cero
 
 if (is_positive_semidefinite) {
     cat("El kernel constante Kc(x, y) = c es un kernel válido debido a su simetría y semidefinición positiva.\n")
@@ -46,14 +46,16 @@ mse <- function(predicted, actual) {
 
 # Encuentra el valor óptimo de c que minimiza el error cuadrático medio
 c_values <- seq(0.01, 1, length.out = 100) # Valores candidatos de c
-mse_values <- numeric(length(c_values))
+mse_values <- numeric(length(c_values)) # Valores de error cuadrático medio
 
+# NO FUNCIONA
 for (i in 1:length(c_values)) {
     tryCatch(
         {
+            # Ajusta el modelo de regresión con kernel constante
             kernel_model <- ksvm(as.matrix(protein), as.vector(carb), kernel = "vanilladot", kpar = list(sigma = sqrt(c_values[i])))
-            predicted_carb <- predict(kernel_model, as.matrix(protein))
-            mse_values[i] <- mse(predicted_carb, carb)
+            predicted_carb <- predict(kernel_model, as.matrix(protein)) # Valores predichos de carb
+            mse_values[i] <- mse(predicted_carb, carb) # Se guarda el error cuadrático medio
         },
         error = function(e) {
             cat("Error en el ajuste del modelo con c =", c_values[i], "\n")
