@@ -2,106 +2,138 @@
 # install.packages("kernlab")
 library(kernlab) # Para la regresión con kernel
 library(openintro)
+library(e1071)
+library(ggplot2)
 
-# Se cargan los datos (reemplazar la ruta por la ruta en su computador)
-#data <- read.table("/Users/seva/Library/CloudStorage/OneDrive-UniversidadAdolfoIbanez/Code/Métodos basados en Kernel/Tareas/Tarea3/datos.txt", header = TRUE,sep=",")
-data <- starbucks
+data(starbucks)
+
 # EJERCICIO 1
-# Variables
-data
-#data$x <- as.numeric(data$x)
-protein <- scale(data$protein) # Estandarizar variable independiente
-carb <- data$carb
+# Estandarizar la variable independiente
+starbucks$protein_std <- scale(starbucks$protein)
 
-# a) Justificación del kernel constante
 
-# Propiedades requeridas para que sea un kernel válido:
-# 1. Simetría: Kc(x, y) = c es simétrico ya que Kc(x, y) = Kc(y, x) para todos x e y.
-# 2. Semidefinición positiva: La matriz de Gram K debe ser semidefinida positiva.
-
-# Demostración de semidefinición positiva:
-# Para cualquier conjunto de puntos {x1, x2, ..., xn}, la matriz de Gram K con K_ij = Kc(xi, xj) será una matriz de unos multiplicada por c.
-# Esta matriz es semidefinida positiva siempre que c sea mayor que o igual a cero.
-
-# Se elige c = 1 para el kernel constante
-c <- 1
-
-# Se crea una matriz de Gram K con K_ij = Kc(xi, xj)
-n <- 10 # Número de puntos
-K <- matrix(c, n, n)
-
-# Verifica si K es semidefinida positiva
-is_positive_semidefinite <- all(eigen(K)$values >= 0) # True si todos los valores propios son mayores que o iguales a cero
-
-if (is_positive_semidefinite) {
-    cat("El kernel constante Kc(x, y) = c es un kernel válido debido a su simetría y semidefinición positiva.\n")
-} else {
-    cat("El kernel constante Kc(x, y) = c no es un kernel válido debido a su falta de semidefinición positiva.\n")
+# Función de kernel constante
+kernel_constante <- function(x, y, c) {
+  return(c)
 }
 
+regresion_kernels <- function(tipo_kernel, a) {
+  tipo <- NULL
 
-# b) Ajuste del modelo de regresión con kernel constante
-# Define una función de error cuadrático medio
-mse <- function(predicted, actual) {
-    mean((predicted - actual)^2)
+  if (a == 1) {
+    tipo <- "Constante"
+  }
+  if (a == 2) {
+    tipo <- "Lineal"
+  }
+  if (a == 3) {
+    tipo <- "Polinomial Grado 2"
+  }
+  if (a == 4) {
+    tipo <- "Gaussiano"
+  }
+
+  # Definir el rango de valores de c que se probarán
+  c_values <- seq(0.001, 1, length.out = 100)
+
+  # Inicializar variables para el seguimiento del mejor modelo
+  best_mse <- Inf
+  best_c <- NULL
+  best_lambda <- NULL
+  best_model <- NULL
+
+  # Implementar la regresión con kernel constante y encontrar el mejor valor de c
+  for (c in c_values) {
+    for (lambda in c_values) {
+      # Crear la matriz del kernel constante
+      K <- matrix(tipo_kernel(starbucks$protein_std, starbucks$protein_std, c), nrow = nrow(starbucks))
+
+      # Añadir regularización lambda a la matriz del kernel
+      K_reg <- K + lambda
+
+      # Ajustar el modelo de regresión con kernel
+      model <- lm(carb ~ K_reg, data = starbucks)
+
+      # Calcular el error cuadrático medio
+      mse <- mean(model$residuals^2)
+
+      # Actualizar el mejor modelo si se encontró uno con menor MSE
+      if (mse < best_mse) {
+        best_mse <- mse
+        best_c <- c
+        best_lambda <- lambda
+        best_model <- model
+      }
+    }
+  }
+
+  # Resultados
+  cat("Mejor valor de c:", best_c, "\n")
+  cat("Mejor valor de lambda:", best_lambda, "\n")
+  cat("Error cuadrático medio mínimo:", best_mse, "\n")
+
+  # Predicciones del mejor modelo
+  predicted_values <- predict(best_model)
+
+  # Gráfico de dispersión de los valores observados vs. valores predichos
+  plot(starbucks$protein_std, starbucks$carb,
+    main = paste("Valores Observados vs. Valores Predichos (", tipo, ")"),
+    xlab = "Protein (Estandarizado)", ylab = "Carb", pch = 20, col = "blue"
+  )
+  points(starbucks$protein_std, predicted_values, pch = 20, col = "red")
+  legend("topright", legend = c("Observados", "Predichos"), col = c("blue", "red"), pch = 20)
 }
 
-# Encuentra el valor óptimo de c que minimiza el error cuadrático medio
-c_values <- seq(0.01, 1, length.out = 100) # Valores candidatos de c
-mse_values <- numeric(length(c_values)) # Valores de error cuadrático medio
-
-# NO FUNCIONA
-for (i in 1:length(c_values)) {
-    tryCatch(
-        {
-            # Ajusta el modelo de regresión con kernel constante
-            kernel_model <- ksvm(as.matrix(protein), as.vector(carb), kernel = "vanilladot", kpar = list(sigma = sqrt(c_values[i])))
-            predicted_carb <- predict(kernel_model, as.matrix(protein)) # Valores predichos de carb
-            mse_values[i] <- mse(predicted_carb, carb) # Se guarda el error cuadrático medio
-        },
-        error = function(e) {
-            cat("Error en el ajuste del modelo con c =", c_values[i], "\n")
-        }
-    )
-}
-
-
-optimal_c <- c_values[which.min(mse_values)]
-cat("El valor óptimo de c para el kernel constante es:", optimal_c, "\n")
-
-# c) Graficar los valores ajustados para el kernel constante
-kernel_model <- ksvm(as.matrix(protein), as.vector(carb), kernel = "vanilladot", kpar = list(sigma = sqrt(optimal_c)))
-predicted_carb <- predict(kernel_model, as.matrix(protein))
-plot(protein, carb, main = "Kernel Constante", xlab = "Proteína (Estandarizada)", ylab = "Carbohidratos")
-lines(protein, predicted_carb, col = "red")
+regresion_kernels(kernel_constante, 1)
 
 # d) Repetir para otros kernels
-# Define los kernels lineal, polinomial y gaussiano
-kernels <- list("Lineal" = "vanilladot", "Polinomial" = "polydot", "Gaussiano" = "rbfdot")
-kernel_parameters <- list("Lineal" = c(0.01, 1), "Polinomial" = c(0.01, 2), "Gaussiano" = c(0.01, 1))
-
-for (kernel_name in names(kernels)) {
-    cat("\nKernel:", kernel_name, "\n")
-    kernel_model <- ksvm(as.matrix(protein), as.vector(carb), kernel = kernels[[kernel_name]], kpar = list(sigma = sqrt(kernel_parameters[[kernel_name]][1])), degree = kernel_parameters[[kernel_name]][2])
-    predicted_carb <- predict(kernel_model, as.matrix(protein))
-    mse_value <- mse(predicted_carb, carb)
-    cat("MSE para el kernel", kernel_name, "es:", mse_value, "\n")
-    plot(protein, carb, main = paste("Kernel", kernel_name), xlab = "Proteína (Estandarizada)", ylab = "Carbohidratos")
-    lines(protein, predicted_carb, col = "red")
+# 1) Kernel Lineal
+kernel_lineal <- function(x, y, c) {
+  return(1 + c^2 * x * y)
 }
 
-# EJERCICIO 2
+regresion_kernels(kernel_lineal, 2)
+
+
+# 2) Kernel Polinomial
+kernel_polinomial <- function(x, y, c) {
+  return((1 + c * x * y)^2)
+}
+
+regresion_kernels(kernel_polinomial, 3)
+
+# 3) Kernel Gaussiano
+kernel_gaussiano <- function(x, y, c) {
+  return(exp(-(x - y)^2 / c^2))
+}
+
+regresion_kernels(kernel_gaussiano, 4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EJERCICIO 2 --- NO REVISADO!!!
 # a) Verificación del kernel browniano y del kernel J
 # Ya hemos demostrado que K(t, s) = σ^2 * min(t, s) y J(x, x') = 1 / (1 - min(x, x')) son kernels válidos en el ejercicio anterior.
 
 # b) Utilizar kernel regression
 # Define los kernels Squared-exponential y Browniano
 kernel_se <- function(x, x2, sigma) {
-    exp(-((x - x2)^2) / (2 * sigma^2))
+  exp(-((x - x2)^2) / (2 * sigma^2))
 }
 
 kernel_brownian <- function(x, x2, sigma) {
-    sigma^2 * pmin(x, x2)
+  sigma^2 * pmin(x, x2)
 }
 
 # Parámetros para ajustar el error cuadrático medio
@@ -130,21 +162,21 @@ K_se <- matrix(0, nrow = length(time_seq), ncol = length(time_seq))
 K_brownian <- matrix(0, nrow = length(time_seq), ncol = length(time_seq))
 
 for (i in 1:length(time_seq)) {
-    for (j in 1:length(time_seq)) {
-        K_se[i, j] <- kernel_se(time_seq[i], time_seq[j], sqrt(sigma_sq_se))
-        K_brownian[i, j] <- kernel_brownian(time_seq[i], time_seq[j], sqrt(sigma_sq_brownian))
-    }
+  for (j in 1:length(time_seq)) {
+    K_se[i, j] <- kernel_se(time_seq[i], time_seq[j], sqrt(sigma_sq_se))
+    K_brownian[i, j] <- kernel_brownian(time_seq[i], time_seq[j], sqrt(sigma_sq_brownian))
+  }
 }
 
 # Graficar los mapas de calor de los kernels
 ggplot() +
-    geom_tile(data = as.data.frame(K_se), aes(x = time_seq, y = rev(time_seq), fill = K_se)) +
-    scale_fill_gradient(low = "white", high = "blue") +
-    labs(title = "Mapa de Calor del Kernel Squared-exponential", x = "Tiempo", y = "Tiempo") +
-    theme_minimal()
+  geom_tile(data = as.data.frame(K_se), aes(x = time_seq, y = rev(time_seq), fill = K_se)) +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(title = "Mapa de Calor del Kernel Squared-exponential", x = "Tiempo", y = "Tiempo") +
+  theme_minimal()
 
 ggplot() +
-    geom_tile(data = as.data.frame(K_brownian), aes(x = time_seq, y = rev(time_seq), fill = K_brownian)) +
-    scale_fill_gradient(low = "white", high = "blue") +
-    labs(title = "Mapa de Calor del Kernel Browniano", x = "Tiempo", y = "Tiempo") +
-    theme_minimal()
+  geom_tile(data = as.data.frame(K_brownian), aes(x = time_seq, y = rev(time_seq), fill = K_brownian)) +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(title = "Mapa de Calor del Kernel Browniano", x = "Tiempo", y = "Tiempo") +
+  theme_minimal()
