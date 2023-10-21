@@ -8,7 +8,7 @@ data(starbucks)
 # Estandarizar la variable independiente
 starbucks$protein_std <- scale(starbucks$protein)
 
-# Definir una función de kernel personalizada
+# Definir una función de kernel gausseana
 kernel_personalizado <- function(x, y, c) {
   return(exp(-((x - y)^2) / c^2))
 }
@@ -26,7 +26,7 @@ regresion_kernel <- function(tipo_kernel, nombre_kernel) {
     # Crear una matriz de kernel personalizada
     K <- outer(starbucks$protein_std, starbucks$protein_std, tipo_kernel, c)
     
-    # Ajustar el modelo de regresión con el kernel personalizado
+    # Ajustar el modelo de regresión con el kernel gausseano
     model <- lm(carb ~ K, data = starbucks)
     
     # Calcular el error cuadrático medio
@@ -53,6 +53,6 @@ regresion_kernel <- function(tipo_kernel, nombre_kernel) {
   legend("topright", legend = c("Observados", "Predichos"), col = c("blue", "red"), pch = 20)
 }
 
-# Utilizar la función de kernel personalizada
-regresion_kernel(kernel_personalizado, "Personalizado")
+# Utilizar la función de kernel gausseano
+regresion_kernel(kernel_personalizado, "Gausseano")
 
