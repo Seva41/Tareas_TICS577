@@ -1,5 +1,4 @@
 # Cargar las bibliotecas necesarias
-library(kernlab) # Para la regresión con kernel
 library(openintro)
 library(ggplot2)
 
@@ -9,8 +8,10 @@ data(starbucks)
 # Estandarizar la variable independiente
 starbucks$protein_std <- scale(starbucks$protein)
 
-# Función de kernel constante
-kernel_constante <- "vanilladot"
+# Definir una función de kernel personalizada
+kernel_personalizado <- function(x, y, c) {
+  return(exp(-((x - y)^2) / c^2))
+}
 
 regresion_kernel <- function(tipo_kernel, nombre_kernel) {
   # Definir el rango de valores de c que se probarán
@@ -22,8 +23,11 @@ regresion_kernel <- function(tipo_kernel, nombre_kernel) {
   best_model <- NULL
   
   for (c in c_values) {
-    # Ajustar el modelo de regresión con kernel
-    model <- ksvm(carb ~ protein_std, data = starbucks, kernel = tipo_kernel, C = 1)
+    # Crear una matriz de kernel personalizada
+    K <- outer(starbucks$protein_std, starbucks$protein_std, tipo_kernel, c)
+    
+    # Ajustar el modelo de regresión con el kernel personalizado
+    model <- lm(carb ~ K, data = starbucks)
     
     # Calcular el error cuadrático medio
     mse <- mean((predict(model, starbucks) - starbucks$carb)^2)
@@ -49,20 +53,6 @@ regresion_kernel <- function(tipo_kernel, nombre_kernel) {
   legend("topright", legend = c("Observados", "Predichos"), col = c("blue", "red"), pch = 20)
 }
 
-# 1) Kernel Constante
-regresion_kernel(kernel_constante, "Constante")
+# Utilizar la función de kernel personalizada
+regresion_kernel(kernel_personalizado, "Personalizado")
 
-# 2) Kernel Lineal
-kernel_lineal <- "vanilladot"
-
-regresion_kernel(kernel_lineal, "Lineal")
-
-# 3) Kernel Polinomial
-kernel_polinomial <- "vanilladot"
-
-regresion_kernel(kernel_polinomial, "Polinomial Grado 2")
-
-# 4) Kernel Gaussiano
-kernel_gaussiano <- "rbfdot"
-
-regresion_kernel(kernel_gaussiano, "Gaussiano")
