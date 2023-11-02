@@ -81,3 +81,25 @@ table(y_test)
 
 sum(diag(CM)/sum(CM))
 
+alphay=rep(0,dim(x_train)[1])
+alphay[KSVM2@alphaindex[[1]]]=KSVM2@coef[[1]]
+
+KGram=matrix(0,nrow=dim(x_train)[1],ncol=dim(x_train)[1])
+for(i in 1:dim(x_train)[1]){
+  for(j in 1:dim(x_train)[1]){
+    KGram[i,j]=Kfun(x_train[i,],x_train[j,])
+  }
+}
+
+g=KGram%*%alphay-KSVM2@b #Encontrar 15% de datos con menores valores de g
+
+quantile(sort(abs(g)),0.15)
+
+Order_index=order(abs(g))[1:10]
+
+calories_dificil=df_train_scaled$Calories[Order_index]
+Fat_dificil=df_train_scaled$Total.Fat[Order_index]
+
+ggplot()+
+  geom_point(aes(x=df_train_scaled$Calories,y=df_train_scaled$Total.Fat,colour=df_train_scaled$class))+
+  geom_point(aes(x=calories_dificil,y=Fat_dificil),colour='red',size=3)
