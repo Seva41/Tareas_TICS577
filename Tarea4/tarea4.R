@@ -10,8 +10,7 @@ library(caret)
 library(kernlab)
 
 # Cargar los datos
-#menu_data <- read.csv("C:/Users/sebad/OneDrive - Universidad Adolfo Ibanez/Code/Métodos basados en Kernel/Tareas/Tarea4/menu.csv", stringsAsFactors = FALSE) #Windows
-menu_data <- read.csv("/Users/seva/Library/CloudStorage/OneDrive-UniversidadAdolfoIbanez/Code/Métodos basados en Kernel/Tareas/Tarea4/menu.csv", stringsAsFactors = FALSE) #macOS
+menu_data <- read.csv(file.choose(), header = TRUE)
 
 # Crear la variable objetivo binaria y convertirla a factor
 menu_data$Is_Breakfast <- as.factor(as.integer(menu_data$Category == "Breakfast"))
