@@ -22,7 +22,7 @@ numeric_features <- menu_data %>% select_if(is.numeric)
 set.seed(42)
 splitIndex <- createDataPartition(menu_data$Is_Breakfast, p = .75, list = FALSE, times = 1)
 train_data <- menu_data[splitIndex, ]
-test_data  <- menu_data[-splitIndex, ]
+test_data <- menu_data[-splitIndex, ]
 
 # Preparar los datos de entrenamiento
 # Seleccionar solo las variables numéricas para el conjunto de entrenamiento
@@ -31,10 +31,10 @@ train_data_numeric$Is_Breakfast <- as.factor(train_data$Is_Breakfast)
 
 
 # Entrenar el modelo SVM con kernel lineal (Vanilla SVM)
-svm_model_vanilla <- svm(Is_Breakfast ~ ., data = train_data_numeric, type = 'C-classification', kernel = 'linear')
+svm_model_vanilla <- svm(Is_Breakfast ~ ., data = train_data_numeric, type = "C-classification", kernel = "linear")
 
 # Entrenar el modelo SVM con kernel radial (Squared Exponential)
-svm_model_se <- svm(Is_Breakfast ~ ., data = train_data_numeric, type = 'C-classification', kernel = 'radial')
+svm_model_se <- svm(Is_Breakfast ~ ., data = train_data_numeric, type = "C-classification", kernel = "radial")
 
 # Preparar los datos de prueba
 # Seleccionar las características numéricas para los datos de prueba
@@ -71,7 +71,7 @@ support_vectors <- test_data_numeric[support_vectors_indices, ]
 # 3. Crear un Gráfico de Dispersión
 ggplot(test_data_numeric, aes(x = Sodium, y = Protein, color = Is_Breakfast)) +
   geom_point() +
-  geom_point(data = support_vectors, aes(x = Sodium, y = Protein), color = "red", size = 3) +
+  geom_point(data = support_vectors, aes(x = Sodium, y = Protein), color = "red", size = 0.45) +
   labs(color = "Is Breakfast") +
   theme_minimal() +
   ggtitle("Support Vectors Highlighted in Red")
@@ -106,14 +106,14 @@ menu_data$Is_Meat <- as.factor(as.integer(menu_data$Category %in% c("Beef & Pork
 set.seed(42)
 splitIndex_meat <- createDataPartition(menu_data$Is_Meat, p = .75, list = FALSE, times = 1)
 train_data_meat <- menu_data[splitIndex_meat, ]
-test_data_meat  <- menu_data[-splitIndex_meat, ]
+test_data_meat <- menu_data[-splitIndex_meat, ]
 
 # Preparar los datos de entrenamiento
 train_data_meat_numeric <- train_data_meat %>% select_if(is.numeric)
 train_data_meat_numeric$Is_Meat <- as.factor(train_data_meat$Is_Meat)
 
 # Entrenar el modelo SVM para "Beef & Pork and Chicken & Fish" vs "Otros"
-svm_model_meat <- svm(Is_Meat ~ ., data = train_data_meat_numeric, type = 'C-classification', kernel = 'radial')
+svm_model_meat <- svm(Is_Meat ~ ., data = train_data_meat_numeric, type = "C-classification", kernel = "radial")
 
 # Realizar predicciones con ambos modelos
 predictions_breakfast <- predict(svm_model_se, newdata = test_data_numeric, decision.values = TRUE)
@@ -129,7 +129,8 @@ decision_values_meat <- as.numeric(decision_values_meat)
 
 # Clasificación final basada en los valores de decisión
 final_predictions <- ifelse(decision_values_breakfast > 0, "Breakfast",
-                            ifelse(decision_values_meat > 0, "Meat", "Other"))
+  ifelse(decision_values_meat > 0, "Meat", "Other")
+)
 
 # Verificar que final_predictions tenga la misma longitud que las otras columnas
 length(final_predictions) == nrow(test_data)
@@ -144,4 +145,3 @@ ggplot(result_data, aes(x = Sodium, y = Protein, color = Category)) +
   labs(color = "Category") +
   theme_minimal() +
   ggtitle("Classification into Three Categories")
-
