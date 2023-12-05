@@ -1,4 +1,3 @@
-# Instalar y cargar paquetes necesarios
 # install.packages("e1071")
 library(e1071)
 
@@ -9,25 +8,17 @@ train_data <- read.table(file.choose(), header = TRUE, sep = ",")
 
 # Estandarizar los datos
 train_data_scaled <- scale(train_data[, c("X1", "X2")])
-# test_data_scaled <- scale(test_data[,-ncol(test_data)])
 
-# Asegúrate de que los datos están cargados y escalados correctamente
-# train_data_scaled y train_data
-
-# Verificar la estructura y los primeros registros de train_data
 str(train_data)
 head(train_data)
 
-# Verificar la estructura y los primeros registros de train_data_scaled
 str(train_data_scaled)
 head(train_data_scaled)
 
-
-# Crear un nuevo data frame combinando train_data_scaled y la columna Y
+# Crea un nuevo data frame combinando train_data_scaled y la columna Y
 train_data_combined <- data.frame(train_data_scaled, Y = train_data$ytrain)
 
-
-# Implementar clasificador SVM con una fórmula explícita
+# Clasificador SVM
 tune_result <- tune(svm, Y ~ .,
   data = train_data_combined,
   kernel = "linear",
@@ -37,19 +28,16 @@ tune_result <- tune(svm, Y ~ .,
 
 best_model <- tune_result$best.model
 
-# Cargar y preparar los datos de prueba
+# Datos de prueba
 test_data <- read.table(file.choose(), header = TRUE, sep = ",")
-
-# Verificar la estructura de test_data
 str(test_data)
 head(test_data)
-
 
 test_data_scaled <- scale(test_data[, c("X1", "X2")])
 # Combinar la columna ytest con los datos escalados de prueba
 test_data_combined <- data.frame(test_data_scaled, Y = test_data$ytest)
 
-# Calcular métricas de desempeño en el conjunto de prueba
+# Métricas de desempeño en el conjunto de prueba
 predictions <- predict(best_model, test_data_combined)
 conf_matrix <- table(predictions, test_data$ytest)
 
@@ -57,19 +45,17 @@ accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
 recall <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
 precision <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
 
-# Imprimir los resultados
 print(list(Accuracy = accuracy, Recall = recall, Precision = precision))
 
 # Ej 1 - Punto 2 ---------------------------------------------------------------
 
-# Cargar las bibliotecas necesarias
 library(kernlab)
 library(e1071)
 
-# Definir un rango de valores para lambda (sigma)
+# Rango de valores para lambda (sigma)
 sigma_values <- seq(0.1, 2, by = 0.1)
 
-# Estructura para almacenar los resultados
+
 results <- data.frame(
   sigma = sigma_values, accuracy = numeric(length(sigma_values)),
   recall = numeric(length(sigma_values)), precision = numeric(length(sigma_values))
@@ -87,20 +73,18 @@ for (i in seq_along(sigma_values)) {
   # Entrenar el modelo SVM
   svm_model <- svm(ytrain ~ ., data = train_data_pca_combined)
 
-  # Preparar los datos de prueba
   test_data_pca <- as.matrix(predict(kpca_model, test_data[, c("X1", "X2")]))
   test_data_pca_combined <- data.frame(test_data_pca, ytest = test_data$ytest)
 
-  # Evaluar el modelo
+  # Evaluar
   predictions <- predict(svm_model, test_data_pca_combined)
   conf_matrix <- table(predictions, test_data$ytest)
 
-  # Calcular métricas de desempeño
+  # Métricas de desempeño
   accuracy2 <- sum(diag(conf_matrix)) / sum(conf_matrix)
   recall2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
   precision2 <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
 
-  # Almacenar los resultados
   results[i, c("accuracy", "recall", "precision")] <- c(accuracy2, recall2, precision2)
 }
 
@@ -118,11 +102,10 @@ library(mvtnorm) # Para la estandarización multivariante
 data(starbucks)
 str(starbucks)
 
-# Filtrar y preparar los datos
 bakery_data <- subset(starbucks, type == "bakery", select = c("calories", "fat", "carb", "fiber", "protein"))
 other_data <- subset(starbucks, type != "bakery", select = c("calories", "fat", "carb", "fiber", "protein"))
 
-# Estandarizar los datos
+# Estandarizacion
 bakery_data_scaled <- scale(bakery_data)
 other_data_scaled <- scale(other_data)
 
@@ -131,11 +114,11 @@ mmd_statistic <- function(x, y, sigma) {
   n <- nrow(x)
   m <- nrow(y)
 
-  # Calcular las matrices de kernel
+  # Matrices de kernel
   Kxx <- exp(-as.matrix(dist(x))^2 / (2 * sigma^2))
   Kyy <- exp(-as.matrix(dist(y))^2 / (2 * sigma^2))
 
-  # Calcular la matriz de distancia cruzada entre x y y
+  # Matriz de distancia cruzada entre 'x' e 'y'
   xy <- rbind(x, y)
   dist_xy <- as.matrix(dist(xy))
   Kxy <- exp(-dist_xy[1:n, (n + 1):(n + m)]^2 / (2 * sigma^2))
@@ -155,16 +138,14 @@ bootstrap_mmds <- replicate(5000, {
   mmd_statistic(x_bootstrap, other_data_scaled, sigma = 0.5)
 })
 
-# Histograma y P-valor
+# Histograma y P-value
 hist(bootstrap_mmds, main = "Distribución de MMD Bootstrap", xlab = "Estadístico MMD", col = "blue", border = "black", xlim = c(min(bootstrap_mmds), max(bootstrap_mmds, observed_mmd)))
 abline(v = observed_mmd, col = "red", lwd = 2)
-
-# Añadir leyenda
 legend("topright", legend = c("MMD Observado"), col = c("red"), lwd = 2)
 
-# Calcular el P-valor
+# Calcular el P-value
 p_value <- mean(bootstrap_mmds >= observed_mmd)
 
-# Imprimir resultados
+# Resultados
 print(paste("MMD Observado:", observed_mmd))
-print(paste("P-Valor:", p_value))
+print(paste("P-Value:", p_value))
