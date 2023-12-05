@@ -1,10 +1,4 @@
-Seva41: generate a readme.md for my project
-
-GitHub Copilot: Sure! Could you please provide the code that you would like me to add documentation comments to? Additionally, could you provide some information about your project so that I can generate a README.md file for you?
-
-Seva41: @workspace Use all the project to generate the Readme
-
-GitHub Copilot: # Proyecto de Tareas de Programación en R
+# Proyecto de Tareas de Programación en R
 
 Este proyecto contiene varias tareas de programación en R, cada una en su propia carpeta. Aquí hay una descripción general de cada tarea:
 
