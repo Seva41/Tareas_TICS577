@@ -1,5 +1,5 @@
 # Instalar y cargar paquetes necesarios
-install.packages("e1071")
+#install.packages("e1071")
 library(e1071)
 
 # Cargar los datos
@@ -7,7 +7,7 @@ train_data <- read.table(file.choose(), header = TRUE, sep=",")
 
 # Estandarizar los datos
 train_data_scaled <- scale(train_data[,c('X1', 'X2')])
-test_data_scaled <- scale(test_data[,-ncol(test_data)])
+#test_data_scaled <- scale(test_data[,-ncol(test_data)])
 
 # Asegúrate de que los datos están cargados y escalados correctamente
 # train_data_scaled y train_data
@@ -56,66 +56,49 @@ precision <- conf_matrix[2,2] / sum(conf_matrix[,2])
 # Imprimir los resultados
 print(list(Accuracy = accuracy, Recall = recall, Precision = precision))
 
-
-# Instalar y cargar paquetes necesarios
-install.packages("kernlab")
-library(kernlab)
-
 # Ejercicio 2 ---------------------------------------------------------------
 
-
-# Cargar los datos
-#train_data <- read.table("/mnt/data/simTrain.txt", header = TRUE)
-#test_data <- read.table("/mnt/data/simTest.txt", header = TRUE)
-
-# Función para calcular la matriz de kernel Gaussiano
-gaussian_kernel <- function(X1, X2, sigma) {
-  size1 <- nrow(X1)
-  size2 <- nrow(X2)
-  matrix <- matrix(0, nrow = size1, ncol = size2)
-  for (i in 1:size1) {
-    for (j in 1:size2) {
-      diff <- X1[i,] - X2[j,]
-      matrix[i,j] <- exp(-sum(diff^2) / (2 * sigma^2))
-    }
-  }
-  return(matrix)
-}
-
-# Calcular la matriz de kernel para train_data
-sigma <- 1 # Este valor puede ser ajustado
-K <- gaussian_kernel(train_data[,-ncol(train_data)], train_data[,-ncol(train_data)], sigma)
-
-# Kernel PCA
-K_centered <- kcca(K, type = "kernelPCA")
-K_transformed <- as.matrix(K_centered@xmatrix)
-
-# Proyección de los datos de entrenamiento en el espacio de PCA
-train_data_pca <- K_transformed[, 1:2] # Seleccionando las primeras 2 componentes
-
-
-# Instalar y cargar paquete SVM
-install.packages("e1071")
+# Cargar las bibliotecas necesarias
+library(kernlab)
 library(e1071)
 
-# Implementar SVM con los datos de PCA
-tune_result <- tune(svm, train.x = train_data_pca, train.y = train_data$Y,
-                    kernel = "linear",
-                    ranges = list(cost = 10^(-1:3)),
-                    cross = 10)
+# Definir un rango de valores para lambda (sigma)
+sigma_values <- seq(0.1, 2, by = 0.1)
 
-best_model <- tune_result$best.model
+# Estructura para almacenar los resultados
+results <- data.frame(sigma = sigma_values, accuracy = numeric(length(sigma_values)), 
+                      recall = numeric(length(sigma_values)), precision = numeric(length(sigma_values)))
 
-# Transformar los datos de prueba usando el mismo Kernel PCA
-test_data_pca <- predict(K_centered, test_data[,-ncol(test_data)])
+# Bucle sobre los valores de sigma
+for (i in seq_along(sigma_values)) {
+  sigma <- sigma_values[i]
+  
+  # Kernel PCA
+  kpca_model <- kpca(~., data = train_data[,c('X1', 'X2')], kernel = "rbfdot", kpar = list(sigma = sigma))
+  train_data_pca <- as.matrix(predict(kpca_model, train_data[,c('X1', 'X2')]))
+  train_data_pca_combined <- data.frame(train_data_pca, ytrain = train_data$ytrain)
+  
+  # Entrenar el modelo SVM
+  svm_model <- svm(ytrain ~ ., data = train_data_pca_combined)
+  
+  # Preparar los datos de prueba
+  test_data_pca <- as.matrix(predict(kpca_model, test_data[,c('X1', 'X2')]))
+  test_data_pca_combined <- data.frame(test_data_pca, ytest = test_data$ytest)
+  
+  # Evaluar el modelo
+  predictions <- predict(svm_model, test_data_pca_combined)
+  conf_matrix <- table(predictions, test_data$ytest)
+  
+  # Calcular métricas de desempeño
+  accuracy2 <- sum(diag(conf_matrix)) / sum(conf_matrix)
+  recall2 <- conf_matrix[2,2] / sum(conf_matrix[2,])
+  precision2 <- conf_matrix[2,2] / sum(conf_matrix[,2])
+  
+  # Almacenar los resultados
+  results[i, c("accuracy", "recall", "precision")] <- c(accuracy2, recall2, precision2)
+}
 
-# Calcular métricas de desempeño en el conjunto de prueba
-predictions <- predict(best_model, test_data_pca)
-conf_matrix <- table(predictions, test_data$Y)
+# Encontrar el mejor sigma
+best_result <- results[which.max(results$accuracy2), ]
+print(best_result)
 
-accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
-recall <- conf_matrix[2,2] / sum(conf_matrix[2,])
-precision <- conf_matrix[2,2] / sum(conf_matrix[,2])
-
-# Imprimir los resultados
-print(list(Accuracy = accuracy, Recall = recall, Precision = precision))
