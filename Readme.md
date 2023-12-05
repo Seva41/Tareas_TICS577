@@ -1,4 +1,5 @@
-# Proyecto de Tareas de Programación en R - Métodos basados en kernel para Aprendizaje Automático
+# Proyecto de Tareas de Programación en R
+# Métodos basados en kernel para Aprendizaje Automático
 ## 2023/2 Secc.1 - TICS577 UAI Viña del Mar
 
 Este proyecto contiene varias tareas de programación en R, cada una en su propia carpeta. Aquí hay una descripción general de cada tarea:
